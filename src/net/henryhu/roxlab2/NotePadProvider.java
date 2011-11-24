@@ -233,6 +233,7 @@ public class NotePadProvider extends ContentProvider implements PipeDataWriter<C
        if (noteId.equals(""))
        {
     	   List<ContentValues> items = s3list();
+           sortByTitle(items);
            for (ContentValues vals : items)
                c.addRow(contentValuesToRow(vals, projection, pmap));
        }
@@ -253,6 +254,39 @@ public class NotePadProvider extends ContentProvider implements PipeDataWriter<C
        // Tells the Cursor what URI to watch, so it knows when its source data changes
        c.setNotificationUri(getContext().getContentResolver(), uri);
        return c;
+   }
+
+   boolean stringLarger(String a, String b)
+   {
+       int x = a.length();
+       if (b.length() < x)
+           x = b.length();
+       for (int i=0; i<x; i++)
+       {
+           if (a.charAt(i) < b.charAt(i))
+               return false;
+           if (a.charAt(i) > b.charAt(i))
+               return true;
+       }
+       if (a.length() > x)
+           return true;
+       else
+           return false;
+   }
+
+   void sortByTitle(List<ContentValues> items)
+   {
+       for (int i=0; i<items.size(); i++)
+           for (int j=0; j<items.size() - 1; j++)
+           {
+               ContentValues a = items.get(j);
+               ContentValues b = items.get(j+1);
+               if (stringLarger(a.getAsString(NotePad.Notes.COLUMN_NAME_TITLE) , b.getAsString(NotePad.Notes.COLUMN_NAME_TITLE)))
+               {
+                   items.set(j, b);
+                   items.set(j+1, a);
+               }
+           }
    }
 
    /**

@@ -1,0 +1,4 @@
+To build, you need AwsCredentials.properties with
+
+secretKey=xxx
+accessKey=xxx
